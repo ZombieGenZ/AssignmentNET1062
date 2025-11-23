@@ -12,6 +12,9 @@ export const useCartStore = defineStore("cart", {
         .filter((x) => state.selectedItemIds.includes(x.id))
         .reduce((sum, i) => sum + i.totalPrice, 0);
     },
+    totalQuantity(state) {
+      return state.items.reduce((sum, item) => sum + (item.quantity || 0), 0);
+    },
   },
   actions: {
     async fetchCart() {

@@ -57,8 +57,10 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { VoucherService } from "../../api/voucher.service";
+import { useToastStore } from "../../stores/toast.store";
 
 const vouchers = ref([]);
+const toast = useToastStore();
 
 const formatPrice = (v) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(v);
@@ -67,7 +69,7 @@ const formatDate = (d) => new Intl.DateTimeFormat("vi-VN").format(new Date(d));
 
 const copyCode = async (code) => {
   await navigator.clipboard.writeText(code);
-  alert("Đã sao chép mã: " + code);
+  toast.success("Đã sao chép mã: " + code);
 };
 
 onMounted(async () => {

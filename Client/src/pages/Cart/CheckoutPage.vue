@@ -190,12 +190,14 @@ import { computed, reactive, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useCartStore } from "../../stores/cart.store";
 import { useAuthStore } from "../../stores/auth.store";
+import { useToastStore } from "../../stores/toast.store";
 import { OrderService } from "../../api/order.service";
 import { VoucherService } from "../../api/voucher.service";
 
 const router = useRouter();
 const cartStore = useCartStore();
 const authStore = useAuthStore();
+const toast = useToastStore();
 
 const form = reactive({
   customerName: "",
@@ -305,7 +307,7 @@ const submitOrder = async () => {
     await cartStore.fetchCart();
     cartStore.clearSelection();
 
-    alert("Đặt hàng thành công!");
+    toast.success("Đặt hàng thành công!");
 
     // Điều hướng sang lịch sử đơn hàng
     router.push({ name: "orders" });

@@ -75,11 +75,13 @@ import { Icon } from "@iconify/vue";
 import { ComboService } from "../../api/combo.service";
 import { useCartStore } from "../../stores/cart.store";
 import { useAuthStore } from "../../stores/auth.store";
+import { useToastStore } from "../../stores/toast.store";
 
 const combos = ref([]);
 const loading = ref(false);
 const cartStore = useCartStore();
 const authStore = useAuthStore();
+const toast = useToastStore();
 
 const formatPrice = (v) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(v || 0);
@@ -118,16 +120,16 @@ const fetchCombos = async () => {
 
 const addToCart = async (id) => {
   if (!authStore.isAuthenticated) {
-    alert("Bạn cần đăng nhập để thêm vào giỏ.");
+    toast.info("Bạn cần đăng nhập để thêm vào giỏ.");
     return;
   }
   try {
     await cartStore.addCombo(id, 1);
-    alert("Đã thêm combo vào giỏ.");
+    toast.success("Đã thêm combo vào giỏ.");
   } catch (err) {
     console.error(err);
     const message = err.response?.data?.message || "Không thể thêm combo vào giỏ. Vui lòng thử lại.";
-    alert(message);
+    toast.error(message);
   }
 };
 
