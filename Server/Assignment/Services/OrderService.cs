@@ -139,6 +139,11 @@ namespace Assignment.Services
                 }
             }
 
+            if (voucher != null)
+            {
+                voucher.UsedCount += 1;
+            }
+
             _db.Orders.Add(order);
             _db.CartItems.RemoveRange(selectedItems);
             await _db.SaveChangesAsync();

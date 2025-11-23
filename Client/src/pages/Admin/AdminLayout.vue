@@ -25,7 +25,7 @@
       <div class="px-6 py-4 text-[11px] text-slate-200 border-t border-slate-800 space-y-2">
         <button
           class="w-full flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold text-xs px-3 py-2 rounded-lg"
-          @click="handleLogout"
+          @click="handleExit"
         >
           <Icon icon="mdi:logout" class="w-4 h-4" />
           Thoát trang quản trị
@@ -44,12 +44,10 @@
 <script setup>
 import { Icon } from "@iconify/vue";
 import { useRoute } from "vue-router";
-import { useAuthStore } from "../../stores/auth.store";
 import { useRouter } from "vue-router";
 
 const route = useRoute();
 const router = useRouter();
-const authStore = useAuthStore();
 
 const navLinks = [
   { name: "admin-dashboard", label: "Tổng quan", to: { name: "admin-dashboard" }, icon: "mdi:view-dashboard-outline" },
@@ -60,8 +58,7 @@ const navLinks = [
   { name: "admin-orders", label: "Đơn hàng", to: { name: "admin-orders" }, icon: "mdi:clipboard-text-clock-outline" },
 ];
 
-const handleLogout = () => {
-  authStore.logout();
+const handleExit = () => {
   router.push({ name: "home" });
 };
 </script>

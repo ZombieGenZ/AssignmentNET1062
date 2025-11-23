@@ -1,5 +1,6 @@
-﻿using Assignment.Data;
+using Assignment.Data;
 using Assignment.Dtos.Vouchers;
+using Assignment.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Assignment.Services
@@ -11,6 +12,84 @@ namespace Assignment.Services
         public VoucherService(AppDbContext db)
         {
             _db = db;
+        }
+
+        public async Task<List<VoucherAdminDto>> GetAllAsync()
+        {
+            var vouchers = await _db.Vouchers.OrderByDescending(v => v.StartDate).ToListAsync();
+            return vouchers.Select(MapToAdminDto).ToList();
+        }
+
+        public async Task<VoucherAdminDto?> GetByIdAsync(Guid id)
+        {
+            var voucher = await _db.Vouchers.FindAsync(id);
+            return voucher == null ? null : MapToAdminDto(voucher);
+        }
+
+        public async Task<VoucherAdminDto> CreateAsync(VoucherUpsertDto model)
+        {
+            if (await _db.Vouchers.AnyAsync(v => v.Code == model.Code))
+            {
+                throw new InvalidOperationException("Mã voucher đã tồn tại.");
+            }
+
+            var voucher = new Voucher
+            {
+                Id = Guid.NewGuid(),
+                Code = model.Code,
+                Description = model.Description,
+                IsPublic = model.IsPublic,
+                DiscountPercent = model.DiscountPercent,
+                DiscountAmount = model.DiscountAmount,
+                MinOrderValue = model.MinOrderValue,
+                MaxUsage = model.MaxUsage,
+                StartDate = model.StartDate,
+                EndDate = model.EndDate,
+                IsActive = model.IsActive,
+                UsedCount = 0
+            };
+
+            _db.Vouchers.Add(voucher);
+            await _db.SaveChangesAsync();
+
+            return MapToAdminDto(voucher);
+        }
+
+        public async Task<VoucherAdminDto?> UpdateAsync(Guid id, VoucherUpsertDto model)
+        {
+            var voucher = await _db.Vouchers.FindAsync(id);
+            if (voucher == null) return null;
+
+            var existed = await _db.Vouchers.AnyAsync(v => v.Code == model.Code && v.Id != id);
+            if (existed)
+            {
+                throw new InvalidOperationException("Mã voucher đã tồn tại.");
+            }
+
+            voucher.Code = model.Code;
+            voucher.Description = model.Description;
+            voucher.IsPublic = model.IsPublic;
+            voucher.DiscountPercent = model.DiscountPercent;
+            voucher.DiscountAmount = model.DiscountAmount;
+            voucher.MinOrderValue = model.MinOrderValue;
+            voucher.MaxUsage = model.MaxUsage;
+            voucher.StartDate = model.StartDate;
+            voucher.EndDate = model.EndDate;
+            voucher.IsActive = model.IsActive;
+
+            await _db.SaveChangesAsync();
+
+            return MapToAdminDto(voucher);
+        }
+
+        public async Task<bool> DeleteAsync(Guid id)
+        {
+            var voucher = await _db.Vouchers.FindAsync(id);
+            if (voucher == null) return false;
+
+            voucher.IsActive = false;
+            await _db.SaveChangesAsync();
+            return true;
         }
 
         public async Task<List<VoucherDto>> GetPublicVouchersAsync()
@@ -48,6 +127,16 @@ namespace Assignment.Services
                 };
             }
 
+            if (voucher.MaxUsage.HasValue && voucher.UsedCount >= voucher.MaxUsage.Value)
+            {
+                return new ValidateVoucherResponse
+                {
+                    IsValid = false,
+                    DiscountAmount = 0,
+                    Message = "Voucher đã hết lượt sử dụng."
+                };
+            }
+
             if (voucher.MinOrderValue.HasValue && request.OrderAmount < voucher.MinOrderValue.Value)
             {
                 return new ValidateVoucherResponse
@@ -69,6 +158,25 @@ namespace Assignment.Services
                 IsValid = true,
                 DiscountAmount = discount,
                 Message = "Áp dụng voucher thành công."
+            };
+        }
+
+        private static VoucherAdminDto MapToAdminDto(Voucher v)
+        {
+            return new VoucherAdminDto
+            {
+                Id = v.Id,
+                Code = v.Code,
+                Description = v.Description,
+                IsPublic = v.IsPublic,
+                DiscountPercent = v.DiscountPercent,
+                DiscountAmount = v.DiscountAmount,
+                MinOrderValue = v.MinOrderValue,
+                MaxUsage = v.MaxUsage,
+                UsedCount = v.UsedCount,
+                StartDate = v.StartDate,
+                EndDate = v.EndDate,
+                IsActive = v.IsActive
             };
         }
     }
