@@ -176,10 +176,62 @@ namespace Assignment.Services
             var user = await GetUserAsync(principal);
             var order = await _db.Orders
                 .Include(o => o.Items)
+                .Include(o => o.Voucher)
                 .FirstOrDefaultAsync(o => o.Id == id && o.UserId == user.Id);
 
             if (order == null) return null;
 
+            return await MapToDetailDto(order);
+        }
+
+        public async Task<List<AdminOrderListItemDto>> GetOrdersAsync(OrderStatus? status)
+        {
+            var query = _db.Orders.AsQueryable();
+
+            if (status.HasValue)
+            {
+                query = query.Where(o => o.Status == status);
+            }
+
+            return await query
+                .OrderByDescending(o => o.CreatedAt)
+                .Select(o => new AdminOrderListItemDto
+                {
+                    Id = o.Id,
+                    CreatedAt = o.CreatedAt,
+                    CustomerName = o.CustomerName,
+                    PhoneNumber = o.PhoneNumber,
+                    TotalPrice = o.TotalPrice,
+                    PaymentMethod = o.PaymentMethod,
+                    Status = o.Status
+                })
+                .ToListAsync();
+        }
+
+        public async Task<OrderDetailDto?> GetOrderDetailForAdminAsync(Guid id)
+        {
+            var order = await _db.Orders
+                .Include(o => o.Items)
+                .Include(o => o.Voucher)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (order == null) return null;
+
+            return await MapToDetailDto(order);
+        }
+
+        public async Task<bool> UpdateOrderStatusAsync(Guid id, OrderStatus status)
+        {
+            var order = await _db.Orders.FirstOrDefaultAsync(o => o.Id == id);
+            if (order == null) return false;
+
+            order.Status = status;
+            await _db.SaveChangesAsync();
+            return true;
+        }
+
+        private async Task<OrderDetailDto> MapToDetailDto(Order order)
+        {
             var dto = new OrderDetailDto
             {
                 Id = order.Id,
