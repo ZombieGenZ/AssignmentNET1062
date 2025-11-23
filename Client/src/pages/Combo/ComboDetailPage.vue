@@ -110,9 +110,11 @@ import { useRoute } from "vue-router";
 import { Icon } from "@iconify/vue";
 import { ComboService } from "../../api/combo.service";
 import { useCartStore } from "../../stores/cart.store";
+import { useAuthStore } from "../../stores/auth.store";
 
 const route = useRoute();
 const cartStore = useCartStore();
+const authStore = useAuthStore();
 
 const combo = ref(null);
 const loading = ref(false);
@@ -161,11 +163,16 @@ const decreaseQty = () => {
 
 const addToCart = async () => {
   if (!combo.value) return;
+  if (!authStore.isAuthenticated) {
+    alert("Bạn cần đăng nhập để thêm vào giỏ.");
+    return;
+  }
   try {
     await cartStore.addCombo(combo.value.id, quantity.value);
     alert("Đã thêm combo vào giỏ.");
-  } catch {
-    alert("Bạn cần đăng nhập để thêm vào giỏ.");
+  } catch (err) {
+    console.error(err);
+    alert("Không thể thêm combo vào giỏ. Vui lòng thử lại.");
   }
 };
 

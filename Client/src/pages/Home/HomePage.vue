@@ -143,10 +143,12 @@ import { ref, onMounted } from "vue";
 import { Icon } from "@iconify/vue";
 import { ComboService } from "../../api/combo.service";
 import { useCartStore } from "../../stores/cart.store";
+import { useAuthStore } from "../../stores/auth.store";
 
 const combos = ref([]);
 const loadingCombos = ref(false);
 const cartStore = useCartStore();
+const authStore = useAuthStore();
 
 const formatPrice = (v) =>
   new Intl.NumberFormat("vi-VN", {
@@ -179,12 +181,16 @@ const fetchCombos = async () => {
 };
 
 const addComboToCart = async (comboId) => {
+  if (!authStore.isAuthenticated) {
+    alert("Bạn cần đăng nhập để thêm vào giỏ.");
+    return;
+  }
   try {
     await cartStore.addCombo(comboId, 1);
     alert("Đã thêm combo vào giỏ.");
   } catch (err) {
     console.error(err);
-    alert("Bạn cần đăng nhập để thêm vào giỏ.");
+    alert("Không thể thêm combo vào giỏ. Vui lòng thử lại.");
   }
 };
 

@@ -79,6 +79,7 @@
 import { ref, onMounted } from "vue";
 import { ProductService } from "../../api/product.service";
 import { useCartStore } from "../../stores/cart.store";
+import { useAuthStore } from "../../stores/auth.store";
 
 const products = ref([]);
 const loading = ref(false);
@@ -87,6 +88,7 @@ const minPrice = ref(null);
 const maxPrice = ref(null);
 
 const cartStore = useCartStore();
+const authStore = useAuthStore();
 
 const fetchProducts = async () => {
   loading.value = true;
@@ -105,11 +107,17 @@ const fetchProducts = async () => {
 };
 
 const addToCart = async (id) => {
+  if (!authStore.isAuthenticated) {
+    alert("Bạn cần đăng nhập để thêm vào giỏ.");
+    return;
+  }
+
   try {
     await cartStore.addProduct(id, 1);
     alert("Đã thêm vào giỏ hàng.");
   } catch (err) {
-    alert("Bạn cần đăng nhập để thêm vào giỏ.");
+    console.error(err);
+    alert("Không thể thêm sản phẩm vào giỏ. Vui lòng thử lại.");
   }
 };
 
