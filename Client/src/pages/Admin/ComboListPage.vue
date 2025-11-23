@@ -1,112 +1,137 @@
 <template>
   <div class="space-y-6">
-    <div class="flex items-center justify-between">
-      <h1 class="text-xl font-bold text-dark">Quản lý combo</h1>
-      <button class="button-secondary text-xs" @click="resetForm">Tạo mới</button>
+    <div class="flex items-center justify-between gap-3">
+      <div>
+        <p class="text-xs uppercase tracking-wide text-slate-500">Combo</p>
+        <h1 class="text-xl font-bold text-slate-900">Quản lý combo</h1>
+      </div>
+      <button
+        class="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-primary rounded-xl shadow-sm hover:shadow-md"
+        @click="openCreate"
+      >
+        + Thêm combo
+      </button>
     </div>
 
-    <div class="grid md:grid-cols-3 gap-4">
-      <div class="md:col-span-2 bg-white rounded-2xl shadow-card">
-        <div class="overflow-x-auto">
-          <table class="min-w-full text-xs">
-            <thead class="bg-slate-50 border-b border-slate-100">
-              <tr>
-                <th class="px-4 py-2 text-left font-semibold text-slate-600">Tên</th>
-                <th class="px-4 py-2 text-left font-semibold text-slate-600">Giảm giá</th>
-                <th class="px-4 py-2 text-left font-semibold text-slate-600">Số món</th>
-                <th class="px-4 py-2 text-left font-semibold text-slate-600">Trạng thái</th>
-                <th class="px-4 py-2 text-right font-semibold text-slate-600">Hành động</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-if="loading">
-                <td colspan="5" class="px-4 py-6 text-center text-slate-500">
-                  Đang tải combo...
-                </td>
-              </tr>
-              <tr v-else-if="!combos.length">
-                <td colspan="5" class="px-4 py-6 text-center text-slate-500">
-                  Chưa có combo nào.
-                </td>
-              </tr>
-              <tr
-                v-else
-                v-for="c in combos"
-                :key="c.id"
-                class="border-b border-slate-100 hover:bg-slate-50/60"
-              >
-                <td class="px-4 py-2 text-sm font-medium text-slate-800">{{ c.name }}</td>
-                <td class="px-4 py-2 text-slate-600">-{{ c.discountPercent }}%</td>
-                <td class="px-4 py-2 text-slate-600">{{ c.itemCount }} món</td>
-                <td class="px-4 py-2">
-                  <span
-                    class="inline-flex items-center px-2 py-1 rounded-full text-[11px] font-medium"
-                    :class="c.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'"
-                  >
-                    {{ c.isActive ? "Hiển thị" : "Ẩn" }}
-                  </span>
-                </td>
-                <td class="px-4 py-2 text-right space-x-2">
-                  <button class="text-[11px] text-primary" @click="startEdit(c.id)">
-                    Sửa
-                  </button>
-                  <button class="text-[11px] text-red-600" @click="removeCombo(c.id)">
-                    Ẩn
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-card overflow-hidden">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+        <div>
+          <p class="text-sm font-semibold text-slate-900">Danh sách combo</p>
+          <p class="text-xs text-slate-500">Thiết lập chương trình ưu đãi</p>
         </div>
       </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-xs">
+          <thead class="bg-slate-50 text-slate-600 uppercase text-[11px] tracking-wide">
+            <tr>
+              <th class="px-5 py-3 text-left font-semibold">Tên</th>
+              <th class="px-5 py-3 text-left font-semibold">Giảm giá</th>
+              <th class="px-5 py-3 text-left font-semibold">Số món</th>
+              <th class="px-5 py-3 text-left font-semibold">Trạng thái</th>
+              <th class="px-5 py-3 text-right font-semibold">Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="loading">
+              <td colspan="5" class="px-5 py-6 text-center text-slate-500">Đang tải combo...</td>
+            </tr>
+            <tr v-else-if="!combos.length">
+              <td colspan="5" class="px-5 py-6 text-center text-slate-500">Chưa có combo nào.</td>
+            </tr>
+            <tr
+              v-else
+              v-for="c in combos"
+              :key="c.id"
+              class="border-t border-slate-100 hover:bg-slate-50/80 transition"
+            >
+              <td class="px-5 py-3 text-sm font-semibold text-slate-900">{{ c.name }}</td>
+              <td class="px-5 py-3 text-slate-600">-{{ c.discountPercent }}%</td>
+              <td class="px-5 py-3 text-slate-600">{{ c.itemCount }} món</td>
+              <td class="px-5 py-3">
+                <span
+                  class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-semibold"
+                  :class="c.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'"
+                >
+                  {{ c.isActive ? "Hiển thị" : "Ẩn" }}
+                </span>
+              </td>
+              <td class="px-5 py-3 text-right">
+                <div class="flex justify-end gap-2 text-[11px]">
+                  <button
+                    class="px-3 py-1.5 rounded-lg border border-slate-200 text-primary hover:bg-slate-100"
+                    @click="startEdit(c.id)"
+                  >
+                    Sửa
+                  </button>
+                  <button
+                    class="px-3 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50"
+                    @click="confirmDelete(c)"
+                  >
+                    Ẩn
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-      <div class="bg-white rounded-2xl shadow-card p-4 space-y-3">
-        <h2 class="text-sm font-semibold text-slate-800">
-          {{ form.id ? "Cập nhật combo" : "Thêm combo" }}
-        </h2>
-        <div class="space-y-2 text-xs">
-          <label class="block text-slate-600 text-[11px]">Tên combo</label>
+    <BaseModal
+      v-model="formModalOpen"
+      :title="form.id ? 'Cập nhật combo' : 'Thêm combo mới'"
+      subtitle="Điền thông tin combo và lựa chọn món"
+    >
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-600">Tên combo</label>
           <input
             v-model="form.name"
             type="text"
-            class="w-full border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+            class="w-full mt-1 border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder="Tên combo"
           />
         </div>
-        <div class="space-y-2 text-xs">
-          <label class="block text-slate-600 text-[11px]">Giảm giá (%)</label>
-          <input
-            v-model.number="form.discountPercent"
-            type="number"
-            min="0"
-            max="100"
-            class="w-full border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-            placeholder="0"
-          />
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-600">Giảm giá (%)</label>
+            <input
+              v-model.number="form.discountPercent"
+              type="number"
+              min="0"
+              max="100"
+              class="w-full mt-1 border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder="0"
+            />
+          </div>
+          <div class="flex items-center gap-2 pt-6">
+            <input id="combo-active" v-model="form.isActive" type="checkbox" />
+            <label for="combo-active" class="text-slate-700">Hiển thị</label>
+          </div>
         </div>
-        <div class="space-y-2 text-xs">
-          <label class="block text-slate-600 text-[11px]">Ảnh</label>
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-600">Ảnh</label>
           <input
             v-model="form.imageUrl"
             type="text"
-            class="w-full border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+            class="w-full mt-1 border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder="Link ảnh"
           />
         </div>
-        <div class="space-y-2 text-xs">
-          <label class="block text-slate-600 text-[11px]">Mô tả</label>
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-600">Mô tả</label>
           <textarea
             v-model="form.description"
             rows="3"
-            class="w-full border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+            class="w-full mt-1 border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder="Mô tả ngắn"
           ></textarea>
         </div>
 
-        <div class="space-y-2 text-xs">
+        <div class="space-y-2">
           <div class="flex items-center justify-between">
-            <label class="text-slate-600 text-[11px]">Món trong combo</label>
-            <button class="text-[11px] text-primary" type="button" @click="addItem">+ Thêm món</button>
+            <label class="text-slate-600 text-[11px] font-semibold">Món trong combo</label>
+            <button class="text-[11px] text-primary font-semibold" type="button" @click="addItem">+ Thêm món</button>
           </div>
           <div v-if="!form.items.length" class="text-[11px] text-slate-500">Chưa chọn món.</div>
           <div
@@ -130,30 +155,47 @@
             <button class="text-[11px] text-red-600" @click="removeItem(idx)">Xoá</button>
           </div>
         </div>
-
-        <div class="flex items-center gap-2 text-xs">
-          <input id="combo-active" v-model="form.isActive" type="checkbox" />
-          <label for="combo-active" class="text-slate-700">Hiển thị</label>
-        </div>
-        <div class="flex gap-2">
-          <button class="button-primary text-xs" :disabled="saving" @click="save">
-            {{ saving ? "Đang lưu..." : form.id ? "Cập nhật" : "Thêm mới" }}
-          </button>
-          <button class="button-secondary text-xs" @click="resetForm">Làm mới</button>
-        </div>
       </div>
-    </div>
+      <template #footer>
+        <button class="px-4 py-2 text-xs font-semibold text-slate-600" @click="closeForm">Hủy</button>
+        <button class="button-primary text-xs" :disabled="saving" @click="save">
+          {{ saving ? "Đang lưu..." : form.id ? "Cập nhật" : "Thêm mới" }}
+        </button>
+      </template>
+    </BaseModal>
+
+    <BaseModal
+      v-model="deleteModalOpen"
+      title="Ẩn combo"
+      subtitle="Combo sẽ không còn hiển thị cho khách hàng"
+    >
+      <p class="text-sm text-slate-700">
+        Bạn có chắc muốn ẩn combo <span class="font-semibold">{{ deleteTarget?.name }}</span>?
+      </p>
+      <template #footer>
+        <button class="px-4 py-2 text-xs font-semibold text-slate-600" @click="deleteModalOpen = false">
+          Hủy
+        </button>
+        <button class="px-4 py-2 text-xs font-semibold text-white bg-red-600 rounded-xl" @click="removeCombo">
+          Xác nhận
+        </button>
+      </template>
+    </BaseModal>
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from "vue";
+import BaseModal from "../../components/BaseModal.vue";
 import { AdminService } from "../../api/admin.service";
 
 const combos = ref([]);
 const products = ref([]);
 const loading = ref(false);
 const saving = ref(false);
+const formModalOpen = ref(false);
+const deleteModalOpen = ref(false);
+const deleteTarget = ref(null);
 
 const form = ref({
   id: null,
@@ -188,6 +230,11 @@ const fetchProducts = async () => {
   }
 };
 
+const openCreate = () => {
+  resetForm();
+  formModalOpen.value = true;
+};
+
 const startEdit = async (id) => {
   try {
     const res = await AdminService.getCombo(id);
@@ -203,10 +250,15 @@ const startEdit = async (id) => {
         ? combo.items.map((i) => ({ productId: i.productId, quantity: i.quantity }))
         : [],
     };
+    formModalOpen.value = true;
   } catch (error) {
     console.error(error);
     alert("Không thể tải combo.");
   }
+};
+
+const closeForm = () => {
+  formModalOpen.value = false;
 };
 
 const resetForm = () => {
@@ -253,6 +305,7 @@ const save = async () => {
 
     await fetchCombos();
     resetForm();
+    formModalOpen.value = false;
   } catch (error) {
     console.error(error);
     alert("Không thể lưu combo.");
@@ -261,15 +314,23 @@ const save = async () => {
   }
 };
 
-const removeCombo = async (id) => {
-  if (!confirm("Ẩn combo này?")) return;
+const confirmDelete = (combo) => {
+  deleteTarget.value = combo;
+  deleteModalOpen.value = true;
+};
+
+const removeCombo = async () => {
+  if (!deleteTarget.value) return;
 
   try {
-    await AdminService.deleteCombo(id);
+    await AdminService.deleteCombo(deleteTarget.value.id);
     await fetchCombos();
   } catch (error) {
     console.error(error);
     alert("Không thể cập nhật combo.");
+  } finally {
+    deleteModalOpen.value = false;
+    deleteTarget.value = null;
   }
 };
 
