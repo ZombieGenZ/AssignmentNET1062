@@ -31,7 +31,10 @@ export const useAuthStore = defineStore("auth", {
 
   getters: {
     isAuthenticated: (state) => !!state.accessToken,
-    isAdmin: (state) => state.user?.roles?.includes("Admin"),
+    isAdmin: (state) =>
+      (state.user?.roles || []).some((role) =>
+        (role || "").toLowerCase() === "admin"
+      ),
   },
 
   actions: {
@@ -63,15 +66,22 @@ export const useAuthStore = defineStore("auth", {
       const payload = parseJwt(token);
       if (!payload) return null;
 
+      const roleClaim =
+        payload.role ||
+        payload.roles ||
+        payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+
+      const roles = Array.isArray(roleClaim)
+        ? roleClaim
+        : roleClaim
+        ? [roleClaim]
+        : [];
+
       return {
         id: payload.sub || payload.nameid || null,
         fullName: payload.fullName || payload.name || payload.given_name || "",
         email: payload.email || "",
-        roles: Array.isArray(payload.role)
-          ? payload.role
-          : payload.role
-          ? [payload.role]
-          : [],
+        roles,
       };
     },
 
