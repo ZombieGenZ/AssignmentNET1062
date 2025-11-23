@@ -26,6 +26,9 @@ const AdminLayout = () => import("../pages/Admin/AdminLayout.vue");
 const AdminDashboardPage = () => import("../pages/Admin/DashboardPage.vue");
 const AdminOrderListPage = () => import("../pages/Admin/OrderListPage.vue");
 const AdminOrderDetailPage = () => import("../pages/Admin/OrderDetailPage.vue");
+const AdminCategoryPage = () => import("../pages/Admin/CategoryListPage.vue");
+const AdminProductPage = () => import("../pages/Admin/ProductListPage.vue");
+const AdminComboPage = () => import("../pages/Admin/ComboListPage.vue");
 
 const router = createRouter({
   history: createWebHistory(),
@@ -59,6 +62,9 @@ const router = createRouter({
         { path: "", name: "admin-dashboard", component: AdminDashboardPage },
         { path: "orders", name: "admin-orders", component: AdminOrderListPage },
         { path: "orders/:id", name: "admin-order-detail", component: AdminOrderDetailPage },
+        { path: "categories", name: "admin-categories", component: AdminCategoryPage },
+        { path: "products", name: "admin-products", component: AdminProductPage },
+        { path: "combos", name: "admin-combos", component: AdminComboPage },
       ],
     },
   ],

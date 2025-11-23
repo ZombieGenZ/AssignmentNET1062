@@ -56,6 +56,7 @@ namespace Assignment.Services
                 Description = combo.Description,
                 ImageUrl = combo.ImageUrl,
                 DiscountPercent = combo.DiscountPercent,
+                IsActive = combo.IsActive,
                 OriginalPrice = original,
                 FinalPrice = final,
                 Items = combo.Items.Select(i => new ComboItemDto

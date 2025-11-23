@@ -48,7 +48,7 @@
             v-if="combo.discountPercent"
             class="text-xs text-slate-400 line-through"
           >
-            {{ formatPrice(combo.originalPrice ?? combo.priceBeforeDiscount || 0) }}
+            {{ formatPrice(combo.originalPrice ?? (combo.priceBeforeDiscount || 0)) }}
           </p>
           <span
             v-if="combo.discountPercent"

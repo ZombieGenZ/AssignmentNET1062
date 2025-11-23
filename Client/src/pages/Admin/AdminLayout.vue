@@ -13,6 +13,27 @@
           Tổng quan
         </router-link>
         <router-link
+          :to="{ name: 'admin-categories' }"
+          class="block px-3 py-2 rounded-lg hover:bg-slate-800"
+          :class="{ 'bg-slate-800': $route.name === 'admin-categories' }"
+        >
+          Danh mục
+        </router-link>
+        <router-link
+          :to="{ name: 'admin-products' }"
+          class="block px-3 py-2 rounded-lg hover:bg-slate-800"
+          :class="{ 'bg-slate-800': $route.name === 'admin-products' }"
+        >
+          Sản phẩm
+        </router-link>
+        <router-link
+          :to="{ name: 'admin-combos' }"
+          class="block px-3 py-2 rounded-lg hover:bg-slate-800"
+          :class="{ 'bg-slate-800': $route.name === 'admin-combos' }"
+        >
+          Combo
+        </router-link>
+        <router-link
           :to="{ name: 'admin-orders' }"
           class="block px-3 py-2 rounded-lg hover:bg-slate-800"
           :class="{ 'bg-slate-800': $route.name === 'admin-orders' }"
