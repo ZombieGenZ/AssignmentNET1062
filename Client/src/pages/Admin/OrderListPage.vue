@@ -1,11 +1,14 @@
 <template>
-  <div class="space-y-4">
-    <div class="flex items-center justify-between">
-      <h1 class="text-xl font-bold text-dark">Đơn hàng</h1>
+  <div class="space-y-5">
+    <div class="flex items-center justify-between gap-3">
+      <div>
+        <p class="text-xs uppercase tracking-wide text-slate-500">Đơn hàng</p>
+        <h1 class="text-xl font-bold text-dark">Danh sách đơn hàng</h1>
+      </div>
       <select
         v-model="statusFilter"
         @change="fetchOrders"
-        class="border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-primary"
+        class="border border-slate-200 rounded-xl px-3 py-2 text-xs bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
       >
         <option value="">Tất cả trạng thái</option>
         <option value="Pending">Chờ xác nhận</option>
@@ -16,18 +19,24 @@
       </select>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-card">
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-card overflow-hidden">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+        <div>
+          <p class="text-sm font-semibold text-slate-900">Tổng hợp đơn hàng</p>
+          <p class="text-xs text-slate-500">Theo dõi hành trình xử lý đơn</p>
+        </div>
+      </div>
       <div class="overflow-x-auto">
         <table class="min-w-full text-xs">
-          <thead class="bg-slate-50 border-b border-slate-100">
+          <thead class="bg-slate-50 border-b border-slate-100 text-[11px] uppercase tracking-wide text-slate-600">
             <tr>
-              <th class="px-4 py-2 text-left font-semibold text-slate-600">Mã đơn</th>
-              <th class="px-4 py-2 text-left font-semibold text-slate-600">Khách hàng</th>
-              <th class="px-4 py-2 text-left font-semibold text-slate-600">Tổng tiền</th>
-              <th class="px-4 py-2 text-left font-semibold text-slate-600">Thanh toán</th>
-              <th class="px-4 py-2 text-left font-semibold text-slate-600">Trạng thái</th>
-              <th class="px-4 py-2 text-left font-semibold text-slate-600">Thời gian</th>
-              <th class="px-4 py-2 text-right font-semibold text-slate-600">Hành động</th>
+              <th class="px-4 py-3 text-left font-semibold">Mã đơn</th>
+              <th class="px-4 py-3 text-left font-semibold">Khách hàng</th>
+              <th class="px-4 py-3 text-left font-semibold">Tổng tiền</th>
+              <th class="px-4 py-3 text-left font-semibold">Thanh toán</th>
+              <th class="px-4 py-3 text-left font-semibold">Trạng thái</th>
+              <th class="px-4 py-3 text-left font-semibold">Thời gian</th>
+              <th class="px-4 py-3 text-right font-semibold">Hành động</th>
             </tr>
           </thead>
           <tbody>
@@ -47,43 +56,31 @@
               :key="o.id"
               class="border-b border-slate-100 hover:bg-slate-50/60"
             >
-              <td class="px-4 py-2 align-top">
-                <p class="font-mono text-[11px] text-slate-800">
-                  {{ shortId(o.id) }}
-                </p>
+              <td class="px-4 py-3 align-top">
+                <p class="font-mono text-[11px] text-slate-800">{{ shortId(o.id) }}</p>
               </td>
-              <td class="px-4 py-2 align-top">
-                <p class="text-[11px] font-medium text-slate-800">
-                  {{ o.customerName || "Khách vãng lai" }}
-                </p>
-                <p class="text-[10px] text-slate-500">
-                  {{ o.phoneNumber }}
-                </p>
+              <td class="px-4 py-3 align-top">
+                <p class="text-[11px] font-medium text-slate-800">{{ o.customerName || "Khách vãng lai" }}</p>
+                <p class="text-[10px] text-slate-500">{{ o.phoneNumber }}</p>
               </td>
-              <td class="px-4 py-2 align-top">
-                <p class="text-[11px] font-semibold text-slate-800">
-                  {{ formatPrice(o.totalPrice) }}
-                </p>
+              <td class="px-4 py-3 align-top">
+                <p class="text-[11px] font-semibold text-slate-800">{{ formatPrice(o.totalPrice) }}</p>
               </td>
-              <td class="px-4 py-2 align-top">
-                <p class="text-[11px] text-slate-700">
-                  {{ mapPayment(o.paymentMethod) }}
-                </p>
+              <td class="px-4 py-3 align-top">
+                <p class="text-[11px] text-slate-700">{{ mapPayment(o.paymentMethod) }}</p>
               </td>
-              <td class="px-4 py-2 align-top">
+              <td class="px-4 py-3 align-top">
                 <span
-                  class="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-medium"
+                  class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-semibold"
                   :class="statusClass(o.status)"
                 >
                   {{ mapStatus(o.status) }}
                 </span>
               </td>
-              <td class="px-4 py-2 align-top">
-                <p class="text-[11px] text-slate-700">
-                  {{ formatDateTime(o.createdAt) }}
-                </p>
+              <td class="px-4 py-3 align-top">
+                <p class="text-[11px] text-slate-700">{{ formatDateTime(o.createdAt) }}</p>
               </td>
-              <td class="px-4 py-2 align-top text-right">
+              <td class="px-4 py-3 align-top text-right">
                 <button
                   class="text-[11px] px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100"
                   @click="goDetail(o.id)"
