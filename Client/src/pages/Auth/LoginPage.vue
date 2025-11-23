@@ -10,7 +10,7 @@
       <div>
         <label class="block text-sm font-medium mb-1">Email hoặc số điện thoại</label>
         <input
-          v-model="form.userName"
+          v-model="form.identifier"
           type="text"
           class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"
           required
@@ -53,7 +53,7 @@ const loading = ref(false);
 const error = ref("");
 
 const form = ref({
-  userName: "",
+  identifier: "",
   password: "",
 });
 
@@ -62,7 +62,7 @@ const onSubmit = async () => {
   try {
     loading.value = true;
     await authStore.login({
-      userName: form.value.userName,
+      identifier: form.value.identifier,
       password: form.value.password,
     });
     const redirect = route.query.redirect || "/";
