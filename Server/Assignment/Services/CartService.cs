@@ -109,6 +109,23 @@ namespace Assignment.Services
 
             if (request.Quantity <= 0) request.Quantity = 1;
 
+            if (request.ItemType == CartItemType.Product)
+            {
+                var product = await _db.Products.FirstOrDefaultAsync(p => p.Id == request.ProductId && p.IsActive);
+                if (product == null)
+                {
+                    throw new ApplicationException("Sản phẩm không tồn tại hoặc đã bị ẩn.");
+                }
+            }
+            else if (request.ItemType == CartItemType.Combo)
+            {
+                var combo = await _db.Combos.Include(c => c.Items).FirstOrDefaultAsync(c => c.Id == request.ComboId && c.IsActive);
+                if (combo == null || !combo.Items.Any())
+                {
+                    throw new ApplicationException("Combo không hợp lệ hoặc đã ngừng bán.");
+                }
+            }
+
             var item = new CartItem
             {
                 Id = Guid.NewGuid(),

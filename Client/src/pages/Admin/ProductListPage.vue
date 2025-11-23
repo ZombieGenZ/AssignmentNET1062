@@ -163,6 +163,27 @@
         </button>
       </template>
     </BaseModal>
+
+    <BaseModal
+      v-model="comboWarningModalOpen"
+      title="Không thể xoá sản phẩm"
+      subtitle="Sản phẩm đang thuộc các combo sau"
+    >
+      <div class="text-sm text-slate-700 space-y-2">
+        <p>
+          Vui lòng gỡ sản phẩm khỏi các combo bên dưới trước khi xoá:
+        </p>
+        <ul class="list-disc list-inside text-slate-800" v-if="relatedCombos.length">
+          <li v-for="combo in relatedCombos" :key="combo.id">{{ combo.name }}</li>
+        </ul>
+        <p v-else class="text-slate-500">Chưa xác định combo liên quan.</p>
+      </div>
+      <template #footer>
+        <button class="px-4 py-2 text-xs font-semibold text-slate-600" @click="comboWarningModalOpen = false">
+          Đã hiểu
+        </button>
+      </template>
+    </BaseModal>
   </div>
 </template>
 
@@ -177,7 +198,9 @@ const loading = ref(false);
 const saving = ref(false);
 const formModalOpen = ref(false);
 const deleteModalOpen = ref(false);
+const comboWarningModalOpen = ref(false);
 const deleteTarget = ref(null);
+const relatedCombos = ref([]);
 
 const form = ref({
   id: null,
@@ -295,7 +318,12 @@ const removeProduct = async () => {
     await fetchProducts();
   } catch (error) {
     console.error(error);
-    alert("Không thể cập nhật trạng thái sản phẩm.");
+    if (error.response?.status === 409) {
+      relatedCombos.value = error.response.data?.combos || [];
+      comboWarningModalOpen.value = true;
+    } else {
+      alert("Không thể cập nhật trạng thái sản phẩm.");
+    }
   } finally {
     deleteModalOpen.value = false;
     deleteTarget.value = null;
