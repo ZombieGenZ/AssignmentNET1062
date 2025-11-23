@@ -9,7 +9,6 @@ namespace Assignment.Dtos.Vouchers
         public string? Description { get; set; }
         public bool IsPublic { get; set; }
         public decimal? DiscountPercent { get; set; }
-        public decimal? DiscountAmount { get; set; }
         public decimal? MinOrderValue { get; set; }
         public int? MaxUsage { get; set; }
         public int UsedCount { get; set; }

@@ -40,7 +40,7 @@ namespace Assignment.Services
                 Description = model.Description,
                 IsPublic = model.IsPublic,
                 DiscountPercent = model.DiscountPercent,
-                DiscountAmount = model.DiscountAmount,
+                DiscountAmount = null,
                 MinOrderValue = model.MinOrderValue,
                 MaxUsage = model.MaxUsage,
                 StartDate = model.StartDate,
@@ -70,7 +70,7 @@ namespace Assignment.Services
             voucher.Description = model.Description;
             voucher.IsPublic = model.IsPublic;
             voucher.DiscountPercent = model.DiscountPercent;
-            voucher.DiscountAmount = model.DiscountAmount;
+            voucher.DiscountAmount = null;
             voucher.MinOrderValue = model.MinOrderValue;
             voucher.MaxUsage = model.MaxUsage;
             voucher.StartDate = model.StartDate;
@@ -105,7 +105,6 @@ namespace Assignment.Services
                     Description = v.Description,
                     IsPublic = v.IsPublic,
                     DiscountPercent = v.DiscountPercent,
-                    DiscountAmount = v.DiscountAmount,
                     StartDate = v.StartDate,
                     EndDate = v.EndDate,
                     IsActive = v.IsActive
@@ -150,8 +149,6 @@ namespace Assignment.Services
             decimal discount = 0;
             if (voucher.DiscountPercent.HasValue)
                 discount = request.OrderAmount * (voucher.DiscountPercent.Value / 100m);
-            else if (voucher.DiscountAmount.HasValue)
-                discount = voucher.DiscountAmount.Value;
 
             return new ValidateVoucherResponse
             {
@@ -170,7 +167,6 @@ namespace Assignment.Services
                 Description = v.Description,
                 IsPublic = v.IsPublic,
                 DiscountPercent = v.DiscountPercent,
-                DiscountAmount = v.DiscountAmount,
                 MinOrderValue = v.MinOrderValue,
                 MaxUsage = v.MaxUsage,
                 UsedCount = v.UsedCount,
