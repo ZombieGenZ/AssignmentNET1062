@@ -93,8 +93,15 @@ const form = reactive({
 });
 
 const load = async () => {
-  if (!authStore.user) {
-    await authStore.fetchProfile();
+  const needsProfile =
+    authStore.isAuthenticated &&
+    (!authStore.user ||
+      ["phoneNumber", "address", "gender"].some(
+        (key) => authStore.user[key] === undefined
+      ));
+
+  if (needsProfile) {
+    await authStore.fetchProfile().catch(() => {});
   }
   const u = authStore.user;
   if (!u) return;
