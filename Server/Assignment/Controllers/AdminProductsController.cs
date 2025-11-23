@@ -23,7 +23,7 @@ namespace Assignment.Controllers
         public async Task<IActionResult> Get()
         {
             var products = await _db.Products.Include(p => p.Category).ToListAsync();
-            var result = products.Select(MapToDto).ToList();
+            var result = products.Select(p => MapToDto(p)).ToList();
             return Ok(result);
         }
 
