@@ -1,6 +1,7 @@
 // src/stores/auth.store.js
 import { defineStore } from "pinia";
 import api from "../api/axios";
+import { AuthService } from "../api/auth.service";
 
 const STORAGE_KEY = "ff_auth";
 
@@ -179,6 +180,24 @@ export const useAuthStore = defineStore("auth", {
       this.refreshToken = null;
       delete api.defaults.headers.common["Authorization"];
       localStorage.removeItem(STORAGE_KEY);
+    },
+
+    async fetchProfile() {
+      if (!this.accessToken) return null;
+
+      const { data } = await AuthService.getProfile();
+      this.user = data;
+
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          user: this.user,
+          accessToken: this.accessToken,
+          refreshToken: this.refreshToken,
+        })
+      );
+
+      return data;
     },
   },
 });

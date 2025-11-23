@@ -319,7 +319,14 @@ const submitOrder = async () => {
 
 onMounted(async () => {
   // Prefill thông tin từ profile nếu có
-  if (!authStore.user && authStore.isAuthenticated) {
+  const needsProfile =
+    authStore.isAuthenticated &&
+    (!authStore.user ||
+      ["fullName", "phoneNumber", "address"].some(
+        (key) => !authStore.user[key]
+      ));
+
+  if (needsProfile) {
     await authStore.fetchProfile().catch(() => {});
   }
   const u = authStore.user;

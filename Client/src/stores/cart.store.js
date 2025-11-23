@@ -17,6 +17,16 @@ export const useCartStore = defineStore("cart", {
     async fetchCart() {
       const res = await CartService.getCart();
       this.items = res.data.items;
+
+      // Mặc định chọn tất cả sản phẩm mới lấy về, đồng thời giữ nguyên lựa chọn trước đó
+      const itemIds = this.items.map((item) => item.id);
+      const preservedSelection = this.selectedItemIds.filter((id) =>
+        itemIds.includes(id)
+      );
+      const newSelections = itemIds.filter((id) =>
+        !preservedSelection.includes(id)
+      );
+      this.selectedItemIds = [...preservedSelection, ...newSelections];
     },
     async addProduct(productId, quantity = 1) {
       await CartService.addItem({
