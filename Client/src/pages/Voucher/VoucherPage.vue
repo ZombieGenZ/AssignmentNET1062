@@ -33,9 +33,6 @@
             <span v-if="v.discountPercent">
               {{ v.discountPercent }}%
             </span>
-            <span v-else-if="v.discountAmount">
-              {{ formatPrice(v.discountAmount) }}
-            </span>
             <span v-else>Không rõ</span>
           </span>
         </p>

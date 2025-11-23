@@ -50,7 +50,6 @@
               <td class="px-5 py-3 text-slate-600 max-w-xs">{{ v.description || '-' }}</td>
               <td class="px-5 py-3 text-slate-700">
                 <span v-if="v.discountPercent">-{{ v.discountPercent }}%</span>
-                <span v-else-if="v.discountAmount">-{{ formatPrice(v.discountAmount) }}</span>
                 <span v-else>Không có</span>
                 <span v-if="v.minOrderValue" class="text-[11px] text-slate-500 block">ĐH tối thiểu: {{ formatPrice(v.minOrderValue) }}</span>
               </td>
@@ -133,17 +132,6 @@
               min="0"
               max="100"
               step="1"
-              class="w-full mt-1 border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="0"
-            />
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold text-slate-600">Giảm tiền</label>
-            <input
-              v-model.number="form.discountAmount"
-              type="number"
-              min="0"
-              step="1000"
               class="w-full mt-1 border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="0"
             />
@@ -242,7 +230,6 @@ const form = ref({
   code: "",
   description: "",
   discountPercent: 0,
-  discountAmount: 0,
   minOrderValue: 0,
   maxUsage: null,
   startDate: "",
@@ -257,7 +244,6 @@ const resetForm = () => {
     code: "",
     description: "",
     discountPercent: 0,
-    discountAmount: 0,
     minOrderValue: 0,
     maxUsage: null,
     startDate: "",
@@ -299,7 +285,6 @@ const startEdit = (voucher) => {
     code: voucher.code,
     description: voucher.description,
     discountPercent: voucher.discountPercent,
-    discountAmount: voucher.discountAmount,
     minOrderValue: voucher.minOrderValue,
     maxUsage: voucher.maxUsage,
     startDate: voucher.startDate?.slice(0, 10) || "",
@@ -320,8 +305,8 @@ const validateForm = () => {
     return false;
   }
 
-  if (!form.value.discountPercent && !form.value.discountAmount) {
-    toast.warning("Nhập giá trị giảm giá hoặc phần trăm.");
+  if (!form.value.discountPercent) {
+    toast.warning("Vui lòng nhập phần trăm giảm.");
     return false;
   }
 
@@ -341,7 +326,6 @@ const save = async () => {
       code: form.value.code,
       description: form.value.description,
       discountPercent: Number(form.value.discountPercent) || 0,
-      discountAmount: Number(form.value.discountAmount) || 0,
       minOrderValue: Number(form.value.minOrderValue) || 0,
       maxUsage: form.value.maxUsage ? Number(form.value.maxUsage) : null,
       startDate: form.value.startDate,

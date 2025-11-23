@@ -5,6 +5,7 @@ using Assignment.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Linq;
 
 namespace Assignment.Services
 {
@@ -54,6 +55,8 @@ namespace Assignment.Services
             await _db.Entry(cart).Collection(c => c.Items).LoadAsync();
             await _db.Entry(cart).Collection(c => c.Items).Query().Include(i => i.Product).Include(i => i.Combo).LoadAsync();
 
+            await NormalizeCartItems(cart);
+
             var dto = new CartResponse
             {
                 Items = cart.Items.Select(i =>
@@ -100,6 +103,34 @@ namespace Assignment.Services
             };
 
             return dto;
+        }
+
+        private async Task NormalizeCartItems(Cart cart)
+        {
+            var hasChanges = false;
+            var groups = cart.Items
+                .GroupBy(i => new { i.ItemType, i.ProductId, i.ComboId })
+                .ToList();
+
+            foreach (var group in groups)
+            {
+                var primary = group.First();
+                var duplicates = group.Skip(1).ToList();
+
+                if (duplicates.Count == 0) continue;
+
+                primary.Quantity += duplicates.Sum(d => d.Quantity);
+                _db.CartItems.RemoveRange(duplicates);
+                hasChanges = true;
+            }
+
+            if (hasChanges)
+            {
+                await _db.SaveChangesAsync();
+
+                await _db.Entry(cart).Collection(c => c.Items).LoadAsync();
+                await _db.Entry(cart).Collection(c => c.Items).Query().Include(i => i.Product).Include(i => i.Combo).LoadAsync();
+            }
         }
 
         public async Task AddItemAsync(ClaimsPrincipal principal, AddCartItemRequest request)
