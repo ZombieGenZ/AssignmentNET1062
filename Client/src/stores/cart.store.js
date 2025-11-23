@@ -61,6 +61,9 @@ export const useCartStore = defineStore("cart", {
       this.items = [];
       this.selectedItemIds = [];
     },
+    selectAll() {
+      this.selectedItemIds = this.items.map((item) => item.id);
+    },
     toggleSelect(id) {
       if (this.selectedItemIds.includes(id)) {
         this.selectedItemIds = this.selectedItemIds.filter((x) => x !== id);

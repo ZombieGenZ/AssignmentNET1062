@@ -7,6 +7,34 @@
     </div>
 
     <div v-else class="space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <button
+            class="px-3 py-2 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            @click="selectAll"
+            :disabled="!items.length || isAllSelected"
+          >
+            Chọn tất cả
+          </button>
+          <button
+            class="px-3 py-2 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            @click="clearSelection"
+            :disabled="!selectedIds.length"
+          >
+            Bỏ chọn tất cả
+          </button>
+        </div>
+
+        <button
+          class="text-xs font-semibold text-red-500 flex items-center gap-1 hover:text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          @click="openClearModal"
+          :disabled="!items.length"
+        >
+          <span class="material-symbols-outlined text-sm">delete</span>
+          Xóa giỏ hàng
+        </button>
+      </div>
+
       <div
         v-for="item in items"
         :key="item.id"
@@ -52,12 +80,6 @@
       </div>
 
       <div class="flex items-center justify-between mt-4">
-        <button
-          class="text-xs text-red-500"
-          @click="clearCart"
-        >
-          Xóa tất cả
-        </button>
         <div class="flex items-center gap-4">
           <p class="text-sm">
             <span class="text-slate-500 mr-1">Tổng đã chọn:</span>
@@ -73,18 +95,47 @@
         </div>
       </div>
     </div>
+
+    <BaseModal
+      v-model="showClearModal"
+      title="Xóa toàn bộ giỏ hàng"
+      subtitle="Hành động này sẽ xóa tất cả sản phẩm khỏi giỏ hàng của bạn"
+    >
+      <p class="text-slate-600 text-sm">Bạn có chắc muốn xóa toàn bộ giỏ hàng?</p>
+      <template #footer>
+        <button
+          class="px-4 py-2 rounded-lg border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+          @click="showClearModal = false"
+        >
+          Hủy
+        </button>
+        <button
+          class="px-4 py-2 rounded-lg bg-red-500 text-white text-sm font-semibold hover:bg-red-600"
+          @click="confirmClearCart"
+        >
+          Xóa tất cả
+        </button>
+      </template>
+    </BaseModal>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useCartStore } from "../../stores/cart.store";
+import { useToastStore } from "../../stores/toast.store";
+import BaseModal from "../../components/BaseModal.vue";
 
 const cartStore = useCartStore();
+const toast = useToastStore();
+const showClearModal = ref(false);
 
 const items = computed(() => cartStore.items);
 const selectedIds = computed(() => cartStore.selectedItemIds);
 const totalSelected = computed(() => cartStore.totalSelected);
+const isAllSelected = computed(
+  () => items.value.length > 0 && selectedIds.value.length === items.value.length
+);
 
 const formatPrice = (v) =>
   new Intl.NumberFormat("vi-VN", {
@@ -93,19 +144,26 @@ const formatPrice = (v) =>
   }).format(v);
 
 const toggleSelect = (id) => cartStore.toggleSelect(id);
+const selectAll = () => cartStore.selectAll();
+const clearSelection = () => cartStore.clearSelection();
 const updateQty = (item, q) => {
   if (q < 1) return;
   cartStore.updateQuantity(item.id, q);
 };
-const removeItem = (id) => {
+const removeItem = async (id) => {
   if (confirm("Xóa sản phẩm này khỏi giỏ hàng?")) {
-    cartStore.removeItem(id);
+    await cartStore.removeItem(id);
+    toast.success("Đã xóa sản phẩm khỏi giỏ hàng.");
   }
 };
-const clearCart = () => {
-  if (confirm("Xóa toàn bộ giỏ hàng?")) {
-    cartStore.clearCart();
-  }
+const openClearModal = () => {
+  if (!items.value.length) return;
+  showClearModal.value = true;
+};
+const confirmClearCart = async () => {
+  await cartStore.clearCart();
+  toast.success("Đã xóa toàn bộ giỏ hàng.");
+  showClearModal.value = false;
 };
 
 onMounted(() => {
