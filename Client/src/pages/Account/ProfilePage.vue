@@ -79,8 +79,10 @@
 import { reactive, ref, onMounted } from "vue";
 import { useAuthStore } from "../../stores/auth.store";
 import { AuthService } from "../../api/auth.service";
+import { useToastStore } from "../../stores/toast.store";
 
 const authStore = useAuthStore();
+const toast = useToastStore();
 const saving = ref(false);
 const original = ref(null);
 
@@ -134,9 +136,9 @@ const save = async () => {
     });
     await authStore.fetchProfile();
     await load();
-    alert("Cập nhật thành công.");
+    toast.success("Cập nhật thành công.");
   } catch (err) {
-    alert("Cập nhật thất bại.");
+    toast.error("Cập nhật thất bại.");
   } finally {
     saving.value = false;
   }

@@ -227,6 +227,7 @@
 import { onMounted, ref } from "vue";
 import BaseModal from "../../components/BaseModal.vue";
 import { AdminService } from "../../api/admin.service";
+import { useToastStore } from "../../stores/toast.store";
 
 const vouchers = ref([]);
 const loading = ref(false);
@@ -234,6 +235,7 @@ const saving = ref(false);
 const formModalOpen = ref(false);
 const deleteModalOpen = ref(false);
 const deleteTarget = ref(null);
+const toast = useToastStore();
 
 const form = ref({
   id: null,
@@ -314,17 +316,17 @@ const closeForm = () => {
 
 const validateForm = () => {
   if (!form.value.code) {
-    alert("Vui lòng nhập mã voucher.");
+    toast.warning("Vui lòng nhập mã voucher.");
     return false;
   }
 
   if (!form.value.discountPercent && !form.value.discountAmount) {
-    alert("Nhập giá trị giảm giá hoặc phần trăm.");
+    toast.warning("Nhập giá trị giảm giá hoặc phần trăm.");
     return false;
   }
 
   if (form.value.startDate && form.value.endDate && form.value.startDate > form.value.endDate) {
-    alert("Ngày bắt đầu phải nhỏ hơn ngày kết thúc.");
+    toast.warning("Ngày bắt đầu phải nhỏ hơn ngày kết thúc.");
     return false;
   }
 
@@ -359,7 +361,7 @@ const save = async () => {
     formModalOpen.value = false;
   } catch (error) {
     console.error(error);
-    alert("Không thể lưu voucher.");
+    toast.error("Không thể lưu voucher.");
   } finally {
     saving.value = false;
   }
@@ -377,7 +379,7 @@ const removeVoucher = async () => {
     await fetchVouchers();
   } catch (error) {
     console.error(error);
-    alert("Không thể xoá voucher.");
+    toast.error("Không thể xoá voucher.");
   } finally {
     deleteModalOpen.value = false;
     deleteTarget.value = null;

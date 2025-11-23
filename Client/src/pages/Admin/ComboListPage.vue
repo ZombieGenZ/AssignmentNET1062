@@ -188,6 +188,7 @@
 import { onMounted, ref } from "vue";
 import BaseModal from "../../components/BaseModal.vue";
 import { AdminService } from "../../api/admin.service";
+import { useToastStore } from "../../stores/toast.store";
 
 const combos = ref([]);
 const products = ref([]);
@@ -196,6 +197,7 @@ const saving = ref(false);
 const formModalOpen = ref(false);
 const deleteModalOpen = ref(false);
 const deleteTarget = ref(null);
+const toast = useToastStore();
 
 const form = ref({
   id: null,
@@ -253,7 +255,7 @@ const startEdit = async (id) => {
     formModalOpen.value = true;
   } catch (error) {
     console.error(error);
-    alert("Không thể tải combo.");
+    toast.error("Không thể tải combo.");
   }
 };
 
@@ -282,7 +284,10 @@ const removeItem = (idx) => {
 };
 
 const save = async () => {
-  if (!form.value.name) return alert("Vui lòng nhập tên combo.");
+  if (!form.value.name) {
+    toast.warning("Vui lòng nhập tên combo.");
+    return;
+  }
 
   saving.value = true;
   try {
@@ -308,7 +313,7 @@ const save = async () => {
     formModalOpen.value = false;
   } catch (error) {
     console.error(error);
-    alert("Không thể lưu combo.");
+    toast.error("Không thể lưu combo.");
   } finally {
     saving.value = false;
   }
@@ -327,7 +332,7 @@ const removeCombo = async () => {
     await fetchCombos();
   } catch (error) {
     console.error(error);
-    alert("Không thể cập nhật combo.");
+    toast.error("Không thể cập nhật combo.");
   } finally {
     deleteModalOpen.value = false;
     deleteTarget.value = null;

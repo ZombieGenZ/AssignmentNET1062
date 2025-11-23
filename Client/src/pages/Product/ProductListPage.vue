@@ -80,6 +80,7 @@ import { ref, onMounted } from "vue";
 import { ProductService } from "../../api/product.service";
 import { useCartStore } from "../../stores/cart.store";
 import { useAuthStore } from "../../stores/auth.store";
+import { useToastStore } from "../../stores/toast.store";
 
 const products = ref([]);
 const loading = ref(false);
@@ -89,6 +90,7 @@ const maxPrice = ref(null);
 
 const cartStore = useCartStore();
 const authStore = useAuthStore();
+const toast = useToastStore();
 
 const fetchProducts = async () => {
   loading.value = true;
@@ -108,17 +110,17 @@ const fetchProducts = async () => {
 
 const addToCart = async (id) => {
   if (!authStore.isAuthenticated) {
-    alert("Bạn cần đăng nhập để thêm vào giỏ.");
+    toast.info("Bạn cần đăng nhập để thêm vào giỏ.");
     return;
   }
 
   try {
     await cartStore.addProduct(id, 1);
-    alert("Đã thêm vào giỏ hàng.");
+    toast.success("Đã thêm vào giỏ hàng.");
   } catch (err) {
     console.error(err);
     const message = err.response?.data?.message || "Không thể thêm sản phẩm vào giỏ. Vui lòng thử lại.";
-    alert(message);
+    toast.error(message);
   }
 };
 

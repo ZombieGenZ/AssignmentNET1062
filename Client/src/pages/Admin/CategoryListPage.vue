@@ -126,6 +126,7 @@
 import { onMounted, ref } from "vue";
 import BaseModal from "../../components/BaseModal.vue";
 import { AdminService } from "../../api/admin.service";
+import { useToastStore } from "../../stores/toast.store";
 
 const categories = ref([]);
 const loading = ref(false);
@@ -133,6 +134,7 @@ const saving = ref(false);
 const formModalOpen = ref(false);
 const deleteModalOpen = ref(false);
 const deleteTarget = ref(null);
+const toast = useToastStore();
 
 const form = ref({
   id: null,
@@ -176,7 +178,10 @@ const resetForm = () => {
 };
 
 const save = async () => {
-  if (!form.value.name) return alert("Vui lòng nhập tên danh mục.");
+  if (!form.value.name) {
+    toast.warning("Vui lòng nhập tên danh mục.");
+    return;
+  }
 
   saving.value = true;
   try {
@@ -191,7 +196,7 @@ const save = async () => {
     formModalOpen.value = false;
   } catch (error) {
     console.error(error);
-    alert("Không thể lưu danh mục.");
+    toast.error("Không thể lưu danh mục.");
   } finally {
     saving.value = false;
   }
@@ -209,7 +214,7 @@ const removeCategory = async () => {
     await fetchCategories();
   } catch (error) {
     console.error(error);
-    alert("Không thể xoá danh mục.");
+    toast.error("Không thể xoá danh mục.");
   } finally {
     deleteModalOpen.value = false;
     deleteTarget.value = null;

@@ -191,6 +191,7 @@
 import { onMounted, ref } from "vue";
 import BaseModal from "../../components/BaseModal.vue";
 import { AdminService } from "../../api/admin.service";
+import { useToastStore } from "../../stores/toast.store";
 
 const products = ref([]);
 const categories = ref([]);
@@ -201,6 +202,7 @@ const deleteModalOpen = ref(false);
 const comboWarningModalOpen = ref(false);
 const deleteTarget = ref(null);
 const relatedCombos = ref([]);
+const toast = useToastStore();
 
 const form = ref({
   id: null,
@@ -274,7 +276,8 @@ const resetForm = () => {
 
 const save = async () => {
   if (!form.value.name || !form.value.categoryId) {
-    return alert("Vui lòng nhập tên và chọn danh mục.");
+    toast.warning("Vui lòng nhập tên và chọn danh mục.");
+    return;
   }
 
   saving.value = true;
@@ -299,7 +302,7 @@ const save = async () => {
     formModalOpen.value = false;
   } catch (error) {
     console.error(error);
-    alert("Không thể lưu sản phẩm.");
+    toast.error("Không thể lưu sản phẩm.");
   } finally {
     saving.value = false;
   }
@@ -322,7 +325,7 @@ const removeProduct = async () => {
       relatedCombos.value = error.response.data?.combos || [];
       comboWarningModalOpen.value = true;
     } else {
-      alert("Không thể cập nhật trạng thái sản phẩm.");
+      toast.error("Không thể cập nhật trạng thái sản phẩm.");
     }
   } finally {
     deleteModalOpen.value = false;

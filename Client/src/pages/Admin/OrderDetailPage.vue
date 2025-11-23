@@ -156,9 +156,11 @@ import { ref, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { Icon } from "@iconify/vue";
 import api from "../../api/axios";
+import { useToastStore } from "../../stores/toast.store";
 
 const route = useRoute();
 const router = useRouter();
+const toast = useToastStore();
 
 const orderId = computed(() => route.params.id);
 const order = ref(null);
@@ -271,10 +273,10 @@ const updateStatus = async () => {
       }
     );
     order.value.status = newStatus.value;
-    alert("Cập nhật trạng thái thành công.");
+    toast.success("Cập nhật trạng thái thành công.");
   } catch (err) {
     console.error(err);
-    alert("Cập nhật trạng thái thất bại.");
+    toast.error("Cập nhật trạng thái thất bại.");
   } finally {
     statusUpdating.value = false;
   }

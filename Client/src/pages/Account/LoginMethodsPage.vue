@@ -105,6 +105,7 @@
 import { onMounted, reactive, ref } from "vue";
 import { Icon } from "@iconify/vue";
 import { AuthService } from "../../api/auth.service";
+import { useToastStore } from "../../stores/toast.store";
 
 const loading = ref(false);
 const methods = reactive({
@@ -112,6 +113,7 @@ const methods = reactive({
   googleLinked: false,
   facebookLinked: false,
 });
+const toast = useToastStore();
 
 const fetchMethods = async () => {
   loading.value = true;
@@ -130,14 +132,16 @@ const unlink = async (provider) => {
   try {
     await AuthService.unlinkLogin(provider);
     await fetchMethods();
-    alert("Đã gỡ liên kết.");
+    toast.success("Đã gỡ liên kết.");
   } catch (err) {
-    alert("Gỡ liên kết thất bại. Backend có thể không cho phép gỡ phương thức duy nhất.");
+    toast.error(
+      "Gỡ liên kết thất bại. Backend có thể không cho phép gỡ phương thức duy nhất."
+    );
   }
 };
 
 const link = (provider) => {
-  alert(`Mock liên kết ${provider} – cần tích hợp OAuth thực tế.`);
+  toast.info(`Mock liên kết ${provider} – cần tích hợp OAuth thực tế.`);
 };
 
 onMounted(fetchMethods);
