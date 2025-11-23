@@ -126,17 +126,31 @@ namespace Assignment.Services
                 }
             }
 
-            var item = new CartItem
-            {
-                Id = Guid.NewGuid(),
-                CartId = cart.Id,
-                ItemType = request.ItemType,
-                ProductId = request.ItemType == CartItemType.Product ? request.ProductId : null,
-                ComboId = request.ItemType == CartItemType.Combo ? request.ComboId : null,
-                Quantity = request.Quantity
-            };
+            var existingItem = await _db.CartItems.FirstOrDefaultAsync(i =>
+                i.CartId == cart.Id &&
+                i.ItemType == request.ItemType &&
+                ((request.ItemType == CartItemType.Product && i.ProductId == request.ProductId) ||
+                 (request.ItemType == CartItemType.Combo && i.ComboId == request.ComboId))
+            );
 
-            _db.CartItems.Add(item);
+            if (existingItem != null)
+            {
+                existingItem.Quantity += request.Quantity;
+            }
+            else
+            {
+                var item = new CartItem
+                {
+                    Id = Guid.NewGuid(),
+                    CartId = cart.Id,
+                    ItemType = request.ItemType,
+                    ProductId = request.ItemType == CartItemType.Product ? request.ProductId : null,
+                    ComboId = request.ItemType == CartItemType.Combo ? request.ComboId : null,
+                    Quantity = request.Quantity
+                };
+
+                _db.CartItems.Add(item);
+            }
             await _db.SaveChangesAsync();
         }
 
