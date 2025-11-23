@@ -11,6 +11,7 @@
         public bool IsActive { get; set; } = true;
 
         public ICollection<ComboItem> Items { get; set; } = new List<ComboItem>();
+        public ICollection<ProductExtraCombo> ProductExtraCombos { get; set; } = new List<ProductExtraCombo>();
 
         public decimal CalculatePrice()
         {

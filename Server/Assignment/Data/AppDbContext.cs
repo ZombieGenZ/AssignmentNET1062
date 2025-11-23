@@ -21,6 +21,10 @@ namespace Assignment.Data
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<ProductType> ProductTypes { get; set; }
+        public DbSet<ProductExtra> ProductExtras { get; set; }
+        public DbSet<ProductExtraProduct> ProductExtraProducts { get; set; }
+        public DbSet<ProductExtraCombo> ProductExtraCombos { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -52,6 +56,40 @@ namespace Assignment.Data
             builder.Entity<RefreshToken>()
                 .HasIndex(x => x.Token)
                 .IsUnique();
+
+            // Product Type
+            builder.Entity<ProductType>()
+                .HasOne(pt => pt.Product)
+                .WithMany(p => p.ProductTypes)
+                .HasForeignKey(pt => pt.ProductId);
+
+            // Product Extras for Products
+            builder.Entity<ProductExtraProduct>()
+                .HasKey(pep => new { pep.ProductId, pep.ProductExtraId });
+
+            builder.Entity<ProductExtraProduct>()
+                .HasOne(pep => pep.Product)
+                .WithMany(p => p.ProductExtraProducts)
+                .HasForeignKey(pep => pep.ProductId);
+
+            builder.Entity<ProductExtraProduct>()
+                .HasOne(pep => pep.ProductExtra)
+                .WithMany(pe => pe.ProductExtraProducts)
+                .HasForeignKey(pep => pep.ProductExtraId);
+
+            // Product Extras for Combos
+            builder.Entity<ProductExtraCombo>()
+                .HasKey(pec => new { pec.ComboId, pec.ProductExtraId });
+
+            builder.Entity<ProductExtraCombo>()
+                .HasOne(pec => pec.Combo)
+                .WithMany(c => c.ProductExtraCombos)
+                .HasForeignKey(pec => pec.ComboId);
+
+            builder.Entity<ProductExtraCombo>()
+                .HasOne(pec => pec.ProductExtra)
+                .WithMany(pe => pe.ProductExtraCombos)
+                .HasForeignKey(pec => pec.ProductExtraId);
         }
     }
 
