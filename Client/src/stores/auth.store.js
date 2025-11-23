@@ -31,6 +31,7 @@ export const useAuthStore = defineStore("auth", {
 
   getters: {
     isAuthenticated: (state) => !!state.accessToken,
+    isAdmin: (state) => state.user?.roles?.includes("Admin"),
   },
 
   actions: {
@@ -139,6 +140,27 @@ export const useAuthStore = defineStore("auth", {
       console.log("REGISTER RESPONSE:", data);
       this._setAuthFromResponse(data);
       return data;
+    },
+
+    setTokens({ accessToken, refreshToken }) {
+      this.accessToken = accessToken || null;
+      this.refreshToken = refreshToken || this.refreshToken;
+
+      if (this.accessToken) {
+        this.user = this.user || this._buildUserFromToken(this.accessToken);
+        api.defaults.headers.common["Authorization"] = `Bearer ${this.accessToken}`;
+      } else {
+        delete api.defaults.headers.common["Authorization"];
+      }
+
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          user: this.user,
+          accessToken: this.accessToken,
+          refreshToken: this.refreshToken,
+        })
+      );
     },
 
     async logout() {

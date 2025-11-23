@@ -89,7 +89,7 @@
 
             <router-link
               v-if="isAdmin"
-              to="/admin/dashboard"
+              :to="{ name: 'admin-dashboard' }"
               class="flex items-center gap-2 px-4 py-2 text-sm hover:bg-slate-50"
             >
               <Icon icon="mdi:shield-crown" style="font-size: 18px" class="text-primary" />
@@ -158,7 +158,7 @@
 
             <router-link
               v-if="isAdmin"
-              to="/admin/dashboard"
+              :to="{ name: 'admin-dashboard' }"
               class="block py-2"
               @click="toggleMobileMenu"
             >
@@ -192,7 +192,7 @@ const mobileMenuOpen = ref(false);
 
 const isAuthenticated = computed(() => authStore.isAuthenticated);
 const userName = computed(() => authStore.user?.fullName || "User");
-const isAdmin = computed(() => authStore.user?.roles?.includes("Admin"));
+const isAdmin = computed(() => authStore.isAdmin);
 const cartCount = computed(() => cartStore.totalQuantity || 0);
 
 const toggleDropdown = () => (showUserMenu.value = !showUserMenu.value);
