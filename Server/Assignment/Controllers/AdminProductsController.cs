@@ -87,6 +87,22 @@ namespace Assignment.Controllers
             var product = await _db.Products.FindAsync(id);
             if (product == null) return NotFound();
 
+            var linkedCombos = await _db.ComboItems
+                .Include(ci => ci.Combo)
+                .Where(ci => ci.ProductId == id && ci.Combo != null)
+                .Select(ci => new { ci.Combo!.Id, ci.Combo.Name })
+                .Distinct()
+                .ToListAsync();
+
+            if (linkedCombos.Any())
+            {
+                return Conflict(new
+                {
+                    message = "Sản phẩm đang thuộc các combo. Vui lòng chỉnh sửa combo trước khi xoá.",
+                    combos = linkedCombos
+                });
+            }
+
             product.IsActive = false;
             await _db.SaveChangesAsync();
             return NoContent();

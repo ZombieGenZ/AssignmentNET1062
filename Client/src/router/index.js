@@ -29,6 +29,7 @@ const AdminOrderDetailPage = () => import("../pages/Admin/OrderDetailPage.vue");
 const AdminCategoryPage = () => import("../pages/Admin/CategoryListPage.vue");
 const AdminProductPage = () => import("../pages/Admin/ProductListPage.vue");
 const AdminComboPage = () => import("../pages/Admin/ComboListPage.vue");
+const AdminVoucherPage = () => import("../pages/Admin/VoucherListPage.vue");
 
 const router = createRouter({
   history: createWebHistory(),
@@ -65,6 +66,7 @@ const router = createRouter({
         { path: "categories", name: "admin-categories", component: AdminCategoryPage },
         { path: "products", name: "admin-products", component: AdminProductPage },
         { path: "combos", name: "admin-combos", component: AdminComboPage },
+        { path: "vouchers", name: "admin-vouchers", component: AdminVoucherPage },
       ],
     },
   ],
