@@ -77,9 +77,11 @@ import { useRoute } from "vue-router";
 import { Icon } from "@iconify/vue";
 import { ProductService } from "../../api/product.service";
 import { useCartStore } from "../../stores/cart.store";
+import { useAuthStore } from "../../stores/auth.store";
 
 const route = useRoute();
 const cartStore = useCartStore();
+const authStore = useAuthStore();
 
 const product = ref(null);
 const loading = ref(false);
@@ -114,11 +116,16 @@ const decreaseQty = () => {
 
 const addToCart = async () => {
   if (!product.value) return;
+  if (!authStore.isAuthenticated) {
+    alert("Bạn cần đăng nhập để thêm vào giỏ.");
+    return;
+  }
   try {
     await cartStore.addProduct(product.value.id, quantity.value);
     alert("Đã thêm vào giỏ hàng.");
-  } catch {
-    alert("Bạn cần đăng nhập để thêm vào giỏ.");
+  } catch (err) {
+    console.error(err);
+    alert("Không thể thêm sản phẩm vào giỏ. Vui lòng thử lại.");
   }
 };
 

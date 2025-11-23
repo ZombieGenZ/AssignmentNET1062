@@ -67,7 +67,7 @@
                     class="px-3 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50"
                     @click="confirmDelete(p)"
                   >
-                    Ẩn
+                    Xoá
                   </button>
                 </div>
               </td>
@@ -148,11 +148,11 @@
 
     <BaseModal
       v-model="deleteModalOpen"
-      title="Ẩn sản phẩm"
-      subtitle="Bạn có chắc muốn thay đổi trạng thái hiển thị?"
+      title="Xoá sản phẩm"
+      subtitle="Sản phẩm sẽ bị xoá khỏi hệ thống"
     >
       <p class="text-sm text-slate-700">
-        Sản phẩm <span class="font-semibold">{{ deleteTarget?.name }}</span> sẽ được ẩn khỏi cửa hàng.
+        Bạn có chắc muốn xoá sản phẩm <span class="font-semibold">{{ deleteTarget?.name }}</span>?
       </p>
       <template #footer>
         <button class="px-4 py-2 text-xs font-semibold text-slate-600" @click="deleteModalOpen = false">

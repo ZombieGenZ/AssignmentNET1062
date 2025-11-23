@@ -67,7 +67,7 @@
                     class="px-3 py-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50"
                     @click="confirmDelete(c)"
                   >
-                    Ẩn
+                    Xoá
                   </button>
                 </div>
               </td>
@@ -166,11 +166,11 @@
 
     <BaseModal
       v-model="deleteModalOpen"
-      title="Ẩn combo"
-      subtitle="Combo sẽ không còn hiển thị cho khách hàng"
+      title="Xoá combo"
+      subtitle="Combo sẽ bị xoá khỏi hệ thống"
     >
       <p class="text-sm text-slate-700">
-        Bạn có chắc muốn ẩn combo <span class="font-semibold">{{ deleteTarget?.name }}</span>?
+        Bạn có chắc muốn xoá combo <span class="font-semibold">{{ deleteTarget?.name }}</span>?
       </p>
       <template #footer>
         <button class="px-4 py-2 text-xs font-semibold text-slate-600" @click="deleteModalOpen = false">
