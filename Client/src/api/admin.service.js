@@ -48,4 +48,21 @@ export const AdminService = {
   deleteCombo(id) {
     return api.delete(`/admin/combos/${id}`);
   },
+
+  // Vouchers
+  getVouchers() {
+    return api.get("/admin/vouchers");
+  },
+  getVoucher(id) {
+    return api.get(`/admin/vouchers/${id}`);
+  },
+  createVoucher(payload) {
+    return api.post("/admin/vouchers", payload);
+  },
+  updateVoucher(id, payload) {
+    return api.put(`/admin/vouchers/${id}`, payload);
+  },
+  deleteVoucher(id) {
+    return api.delete(`/admin/vouchers/${id}`);
+  },
 };

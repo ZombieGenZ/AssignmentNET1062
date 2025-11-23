@@ -125,7 +125,8 @@ const addToCart = async () => {
     alert("Đã thêm vào giỏ hàng.");
   } catch (err) {
     console.error(err);
-    alert("Không thể thêm sản phẩm vào giỏ. Vui lòng thử lại.");
+    const message = err.response?.data?.message || "Không thể thêm sản phẩm vào giỏ. Vui lòng thử lại.";
+    alert(message);
   }
 };
 

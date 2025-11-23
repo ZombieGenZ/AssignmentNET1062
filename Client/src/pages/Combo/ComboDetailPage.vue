@@ -172,7 +172,8 @@ const addToCart = async () => {
     alert("Đã thêm combo vào giỏ.");
   } catch (err) {
     console.error(err);
-    alert("Không thể thêm combo vào giỏ. Vui lòng thử lại.");
+    const message = err.response?.data?.message || "Không thể thêm combo vào giỏ. Vui lòng thử lại.";
+    alert(message);
   }
 };
 

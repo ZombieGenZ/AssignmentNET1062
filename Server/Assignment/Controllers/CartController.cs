@@ -23,8 +23,15 @@ namespace Assignment.Controllers
         [HttpPost("items")]
         public async Task<IActionResult> AddItem([FromBody] AddCartItemRequest request)
         {
-            await _cartService.AddItemAsync(User, request);
-            return NoContent();
+            try
+            {
+                await _cartService.AddItemAsync(User, request);
+                return NoContent();
+            }
+            catch (ApplicationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPut("items/{id:guid}")]
