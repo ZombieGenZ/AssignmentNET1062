@@ -1,4 +1,4 @@
-using Assignment.Data;
+﻿using Assignment.Data;
 using Assignment.Models;
 using Assignment.Options;
 using Assignment.Services;
@@ -90,6 +90,20 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 //builder.Services.AddScoped<IAdminService, AdminService>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        await DbInitializer.Initialize(services);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Đã xảy ra lỗi khi seeding dữ liệu.");
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
