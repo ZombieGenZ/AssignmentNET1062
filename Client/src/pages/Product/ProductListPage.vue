@@ -46,8 +46,15 @@
         :key="item.id"
         class="bg-white rounded-2xl shadow-card overflow-hidden flex flex-col"
       >
-        <div class="w-full h-36 bg-slate-100 flex items-center justify-center">
-          <span class="material-symbols-outlined text-primary text-[32px]">lunch_dining</span>
+        <div class="w-full h-36 bg-slate-100 flex items-center justify-center overflow-hidden">
+          <img
+            v-if="item.imageUrl && !item._imageError"
+            :src="item.imageUrl"
+            :alt="item.name"
+            class="w-full h-full object-cover"
+            @error="item._imageError = true"
+          />
+          <span v-else class="material-symbols-outlined text-primary text-[32px]">lunch_dining</span>
         </div>
         <div class="p-3 flex flex-col gap-1 flex-1">
           <p class="font-semibold text-sm text-dark line-clamp-2">{{ item.name }}</p>
