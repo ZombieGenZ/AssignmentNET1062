@@ -92,8 +92,22 @@
             :key="item.id"
             class="bg-white rounded-2xl shadow-card overflow-hidden flex flex-col"
           >
-            <div class="w-full h-32 bg-slate-50 flex items-center justify-center">
-              <Icon icon="mdi:food-variant" class="text-amber-400" style="font-size: 36px" />
+            <div class="w-full h-32 bg-slate-900 flex items-center justify-center overflow-hidden">
+              <img
+                v-if="item.imageUrl && !item._imageError"
+                :src="item.imageUrl"
+                :alt="item.name"
+                class="w-full h-full object-cover"
+                @error="item._imageError = true"
+              />
+              <div v-else class="flex gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center">
+                  <Icon icon="mdi:food" class="text-amber-400" style="font-size: 26px" />
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center">
+                  <Icon icon="mdi:food-variant" class="text-amber-400" style="font-size: 26px" />
+                </div>
+              </div>
             </div>
 
             <div class="p-3 flex flex-col gap-1 flex-1">
